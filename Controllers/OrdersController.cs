@@ -6,91 +6,94 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PerfumeStore.Data;
+using PerfumeStore.Helpers;
 using PerfumeStore.Models;
 
 namespace PerfumeStore.Controllers
 {
-    public class ProductsController : Controller
+    public class OrdersController : Controller
     {
         private readonly PerfumeStoreContext _context;
 
-        public ProductsController(PerfumeStoreContext context)
+        public OrdersController(PerfumeStoreContext context)
         {
             _context = context;
         }
 
-        // GET: Products
+        // GET: Orders
         public async Task<IActionResult> Index()
         {
-              return _context.Products != null ? 
-                          View(await _context.Products.ToListAsync()) :
-                          Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
+              return _context.Orders != null ? 
+                          View(await _context.Orders.ToListAsync()) :
+                          Problem("Entity set 'PerfumeStoreContext.Orders'  is null.");
         }
 
-        // GET: Products/Details/5
+        // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Products == null)
+            if (id == null || _context.Orders == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
+            var order = await _context.Orders
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(order);
         }
 
-        // GET: Products/Create
+        // GET: Orders/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Products/Create
+        // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Size")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,OrderRef,OrderDate,OrderName,PhoneNumber,Address,City")] Order order)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
+                var gen = new RefGenerator();              
+                order.OrderRef = gen.OrdRefNumber();
+                _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(order);
         }
 
-        // GET: Products/Edit/5
+        // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Products == null)
+            if (id == null || _context.Orders == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
-            return View(product);
+            return View(order);
         }
 
-        // POST: Products/Edit/5
+        // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Size")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,OrderRef,OrderDate,OrderName,PhoneNumber,Address,City")] Order order)
         {
-            if (id != product.Id)
+            if (id != order.Id)
             {
                 return NotFound();
             }
@@ -99,12 +102,12 @@ namespace PerfumeStore.Controllers
             {
                 try
                 {
-                    _context.Update(product);
+                    _context.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!OrderExists(order.Id))
                     {
                         return NotFound();
                     }
@@ -115,49 +118,49 @@ namespace PerfumeStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(order);
         }
 
-        // GET: Products/Delete/5
+        // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Products == null)
+            if (id == null || _context.Orders == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
+            var order = await _context.Orders
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(order);
         }
 
-        // POST: Products/Delete/5
+        // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Products == null)
+            if (_context.Orders == null)
             {
-                return Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
+                return Problem("Entity set 'PerfumeStoreContext.Orders'  is null.");
             }
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
             {
-                _context.Products.Remove(product);
+                _context.Orders.Remove(order);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        private bool OrderExists(int id)
         {
-          return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

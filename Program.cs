@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PerfumeStore.Data;
+using PerfumeStore.Helpers;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PerfumeStoreContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("PerfumeStoreContext") ?? throw new InvalidOperationException("Connection string 'PerfumeStoreContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<RefGenerator>();
 
 var app = builder.Build();
 
