@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,38 @@ namespace PerfumeStore.Controllers
         {
             _context = context;
         }
+        public class MyViewModel
+        {
+            public List<Product>? Products { get; set; }
+            public int CurrentPage { get; set; }
+            public int TotalPages { get; set; }
+        }
+
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-              return _context.Products != null ? 
-                          View(await _context.Products.ToListAsync()) :
-                          Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
+
+            if (_context.Products != null)
+            {
+                var products = await _context.Products.ToListAsync();
+                var productsCount = products.Count();
+                var pagemax = 6;
+                int totalPages = (int)Math.Ceiling((decimal)productsCount / pagemax);
+
+                var viewModel = new MyViewModel
+                {
+                    Products = products.Skip((page - 1) * pagemax).Take(totalPages).ToList(),
+                    CurrentPage = page,
+                    TotalPages = totalPages,
+                };
+                return View(viewModel);
+
+                //return View(await _context.Products.ToListAsync());
+            }
+              return Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
+            
+                          
         }
 
         // GET: Products/Details/5
