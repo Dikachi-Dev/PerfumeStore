@@ -61,7 +61,7 @@ namespace PerfumeStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                var gen = new RefGenerator();              
+                var gen = new RefGenerator();
                 order.OrderRef = gen.OrdRefNumber();
                 _context.Add(order);
                 await _context.SaveChangesAsync();

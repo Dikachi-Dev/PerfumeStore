@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PerfumeStore.Data;
-using PerfumeStore.Helpers;
 using PerfumeStore.Models;
 
 namespace PerfumeStore.Controllers
@@ -15,39 +19,44 @@ namespace PerfumeStore.Controllers
             _context = context;
         }
 
-
+        // GET: Stocks
         public async Task<IActionResult> Index()
         {
-            return  _context.Stocks != null ?
-                View(await _context.Stocks.ToListAsync()) :
-                Problem("Entity set 'PerfumeStoreContext.Stock'  is null.");
-
+              return _context.Stocks != null ? 
+                          View(await _context.Stocks.ToListAsync()) :
+                          Problem("Entity set 'PerfumeStoreContext.Stocks'  is null.");
         }
 
+        // GET: Stocks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Stocks == null)
             {
                 return NotFound();
             }
-            var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.Id== id);
-            if(stock != null)
-            {
-                return View(stock);
-            }
-            return NotFound();
 
+            var stock = await _context.Stocks
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (stock == null)
+            {
+                return NotFound();
+            }
+
+            return View(stock);
         }
 
-
+        // GET: Stocks/Create
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: Stocks/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id, ProductId, Quantity")] Stock stock)
+        public async Task<IActionResult> Create([Bind("Id,Quantity")] Stock stock)
         {
             if (ModelState.IsValid)
             {
@@ -58,6 +67,7 @@ namespace PerfumeStore.Controllers
             return View(stock);
         }
 
+        // GET: Stocks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Stocks == null)
@@ -73,9 +83,12 @@ namespace PerfumeStore.Controllers
             return View(stock);
         }
 
+        // POST: Stocks/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, ProductId, Quantity")] Stock stock)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Quantity")] Stock stock)
         {
             if (id != stock.Id)
             {
@@ -105,7 +118,7 @@ namespace PerfumeStore.Controllers
             return View(stock);
         }
 
-
+        // GET: Stocks/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Stocks == null)
@@ -113,39 +126,38 @@ namespace PerfumeStore.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Stocks
+            var stock = await _context.Stocks
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (order == null)
+            if (stock == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(stock);
         }
 
-        // POST: Orders/Delete/5
+        // POST: Stocks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Stocks == null)
             {
-                return Problem("Entity set 'PerfumeStoreContext.Orders'  is null.");
+                return Problem("Entity set 'PerfumeStoreContext.Stocks'  is null.");
             }
             var stock = await _context.Stocks.FindAsync(id);
             if (stock != null)
             {
                 _context.Stocks.Remove(stock);
             }
-
+            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-
         private bool StockExists(int id)
         {
-            return (_context.Stocks?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Stocks?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

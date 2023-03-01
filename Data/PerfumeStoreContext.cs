@@ -19,5 +19,19 @@ namespace PerfumeStore.Data
         public DbSet<PerfumeStore.Models.Order> Orders { get; set; } = default!;
         public DbSet<Stock> Stocks { get; set; }= default!;
         public DbSet<PerfumeStore.Models.Category> Category { get; set; } = default!;
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.CategoryId)
+                .WithOne(c => c.Product)
+                .HasForeignKey<Category>(c => c.Id);
+            modelBuilder.Entity<Stock>()
+                .HasOne(p => p.ProductId)
+                .WithOne(s => s.Stock)
+                .HasForeignKey<Product>(p => p.Id);
+        }
     }
+  
 }

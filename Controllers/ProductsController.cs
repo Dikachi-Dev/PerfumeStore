@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PerfumeStore.Data;
+using PerfumeStore.Helpers;
 using PerfumeStore.Models;
 
 namespace PerfumeStore.Controllers
@@ -19,38 +19,51 @@ namespace PerfumeStore.Controllers
         {
             _context = context;
         }
-        public class MyViewModel
+
+        public MyViewModel GetAllProducts(int page)
         {
-            public List<Product>? Products { get; set; }
-            public int CurrentPage { get; set; }
-            public int TotalPages { get; set; }
+            var query = _context.Products.AsNoTracking().AsQueryable();
+
+            var productsCount = query.Count();
+            var pagemax = 6;
+            int totalPages = (int)Math.Ceiling((decimal)productsCount / pagemax);
+            return new MyViewModel
+            {
+                CurrentPage = page,
+                TotalPages = totalPages,
+                Products = query
+                    .Skip((page - 1) * pagemax).Take(totalPages).ToList(),
+
+            };
         }
 
 
         // GET: Products
-        public async Task<IActionResult> Index(int page = 1)
+        public  IActionResult Index(int page = 1)
         {
+            var vm = GetAllProducts(page);
+            return View(vm);
 
-            if (_context.Products != null)
-            {
-                var products = await _context.Products.ToListAsync();
-                var productsCount = products.Count();
-                var pagemax = 6;
-                int totalPages = (int)Math.Ceiling((decimal)productsCount / pagemax);
+            //if (_context.Products != null)
+            //{
+            //    var products =  _context.Products.AsNoTracking().AsQueryable();
+            //    var productsCount = products.Count();
+            //    var pagemax = 6;
 
-                var viewModel = new MyViewModel
-                {
-                    Products = products.Skip((page - 1) * pagemax).Take(totalPages).ToList(),
-                    CurrentPage = page,
-                    TotalPages = totalPages,
-                };
-                return View(viewModel);
+            //    var viewModel =(int)Math.Ceiling((decimal)productsCount / pagemax);
+            //    new MyViewModel
+            //    {
+            //        Products = products.Skip((page - 1) * pagemax).Take(totalPages).ToList(),
+            //        CurrentPage = page,
+            //        TotalPages = totalPages,
+            //    };
+            //    return View(viewModel);
 
-                //return View(await _context.Products.ToListAsync());
-            }
-              return Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
-            
-                          
+            //    //return View(await _context.Products.ToListAsync());
+            //}
+            //return Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
+
+
         }
 
         // GET: Products/Details/5
@@ -62,6 +75,7 @@ namespace PerfumeStore.Controllers
             }
 
             var product = await _context.Products
+                .Include(p => p.Stock)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -74,6 +88,7 @@ namespace PerfumeStore.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id");
             return View();
         }
 
@@ -82,7 +97,7 @@ namespace PerfumeStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Size")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Tag,Size")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -90,6 +105,7 @@ namespace PerfumeStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id", product.Id);
             return View(product);
         }
 
@@ -106,6 +122,7 @@ namespace PerfumeStore.Controllers
             {
                 return NotFound();
             }
+            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id", product.Id);
             return View(product);
         }
 
@@ -114,7 +131,7 @@ namespace PerfumeStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Size")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Tag,Size")] Product product)
         {
             if (id != product.Id)
             {
@@ -141,6 +158,7 @@ namespace PerfumeStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id", product.Id);
             return View(product);
         }
 
@@ -153,6 +171,7 @@ namespace PerfumeStore.Controllers
             }
 
             var product = await _context.Products
+                .Include(p => p.Stock)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -169,7 +188,7 @@ namespace PerfumeStore.Controllers
         {
             if (_context.Products == null)
             {
-                return Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
+                return Problem("Entity set 'PerfumeStoreContext.Products'  is null.");
             }
             var product = await _context.Products.FindAsync(id);
             if (product != null)

@@ -22,9 +22,8 @@ namespace PerfumeStore.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-              return _context.Category != null ? 
-                          View(await _context.Category.ToListAsync()) :
-                          Problem("Entity set 'PerfumeStoreContext.Category'  is null.");
+            var perfumeStoreContext = _context.Category.Include(c => c.Product);
+            return View(await perfumeStoreContext.ToListAsync());
         }
 
         // GET: Categories/Details/5
@@ -36,6 +35,7 @@ namespace PerfumeStore.Controllers
             }
 
             var category = await _context.Category
+                .Include(c => c.Product)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
@@ -48,6 +48,7 @@ namespace PerfumeStore.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
+            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id");
             return View();
         }
 
@@ -64,6 +65,7 @@ namespace PerfumeStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id", category.Id);
             return View(category);
         }
 
@@ -80,6 +82,7 @@ namespace PerfumeStore.Controllers
             {
                 return NotFound();
             }
+            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id", category.Id);
             return View(category);
         }
 
@@ -115,6 +118,7 @@ namespace PerfumeStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id", category.Id);
             return View(category);
         }
 
@@ -127,6 +131,7 @@ namespace PerfumeStore.Controllers
             }
 
             var category = await _context.Category
+                .Include(c => c.Product)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
