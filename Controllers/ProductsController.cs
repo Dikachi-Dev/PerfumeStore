@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PerfumeStore.Data;
-using PerfumeStore.Helpers;
 using PerfumeStore.Models;
 
 namespace PerfumeStore.Controllers
@@ -20,50 +19,12 @@ namespace PerfumeStore.Controllers
             _context = context;
         }
 
-        public MyViewModel GetAllProducts(int page)
-        {
-            var query = _context.Products.AsNoTracking().AsQueryable();
-
-            var productsCount = query.Count();
-            var pagemax = 6;
-            int totalPages = (int)Math.Ceiling((decimal)productsCount / pagemax);
-            return new MyViewModel
-            {
-                CurrentPage = page,
-                TotalPages = totalPages,
-                Products = query
-                    .Skip((page - 1) * pagemax).Take(totalPages).ToList(),
-
-            };
-        }
-
-
         // GET: Products
-        public  IActionResult Index(int page = 1)
+        public async Task<IActionResult> Index()
         {
-            var vm = GetAllProducts(page);
-            return View(vm);
-
-            //if (_context.Products != null)
-            //{
-            //    var products =  _context.Products.AsNoTracking().AsQueryable();
-            //    var productsCount = products.Count();
-            //    var pagemax = 6;
-
-            //    var viewModel =(int)Math.Ceiling((decimal)productsCount / pagemax);
-            //    new MyViewModel
-            //    {
-            //        Products = products.Skip((page - 1) * pagemax).Take(totalPages).ToList(),
-            //        CurrentPage = page,
-            //        TotalPages = totalPages,
-            //    };
-            //    return View(viewModel);
-
-            //    //return View(await _context.Products.ToListAsync());
-            //}
-            //return Problem("Entity set 'PerfumeStoreContext.Product'  is null.");
-
-
+              return _context.Products != null ? 
+                          View(await _context.Products.ToListAsync()) :
+                          Problem("Entity set 'PerfumeStoreContext.Products'  is null.");
         }
 
         // GET: Products/Details/5
@@ -75,7 +36,6 @@ namespace PerfumeStore.Controllers
             }
 
             var product = await _context.Products
-                .Include(p => p.Stock)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -88,10 +48,11 @@ namespace PerfumeStore.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id");
+
             return View();
         }
 
+      
         // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -105,7 +66,6 @@ namespace PerfumeStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id", product.Id);
             return View(product);
         }
 
@@ -122,7 +82,6 @@ namespace PerfumeStore.Controllers
             {
                 return NotFound();
             }
-            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id", product.Id);
             return View(product);
         }
 
@@ -158,7 +117,6 @@ namespace PerfumeStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Id"] = new SelectList(_context.Stocks, "Id", "Id", product.Id);
             return View(product);
         }
 
@@ -171,7 +129,6 @@ namespace PerfumeStore.Controllers
             }
 
             var product = await _context.Products
-                .Include(p => p.Stock)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {

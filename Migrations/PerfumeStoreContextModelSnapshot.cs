@@ -25,12 +25,20 @@ namespace PerfumeStore.Migrations
             modelBuilder.Entity("PerfumeStore.Models.Category", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Category");
                 });
@@ -69,7 +77,10 @@ namespace PerfumeStore.Migrations
             modelBuilder.Entity("PerfumeStore.Models.Product", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -96,10 +107,15 @@ namespace PerfumeStore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Stocks");
                 });
@@ -107,33 +123,26 @@ namespace PerfumeStore.Migrations
             modelBuilder.Entity("PerfumeStore.Models.Category", b =>
                 {
                     b.HasOne("PerfumeStore.Models.Product", "Product")
-                        .WithOne("CategoryId")
-                        .HasForeignKey("PerfumeStore.Models.Category", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Categorys")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Models.Stock", b =>
+                {
+                    b.HasOne("PerfumeStore.Models.Product", "Product")
+                        .WithMany("Stocks")
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("Product");
                 });
 
             modelBuilder.Entity("PerfumeStore.Models.Product", b =>
                 {
-                    b.HasOne("PerfumeStore.Models.Stock", "Stock")
-                        .WithOne("ProductId")
-                        .HasForeignKey("PerfumeStore.Models.Product", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Categorys");
 
-                    b.Navigation("Stock");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Models.Product", b =>
-                {
-                    b.Navigation("CategoryId");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Models.Stock", b =>
-                {
-                    b.Navigation("ProductId");
+                    b.Navigation("Stocks");
                 });
 #pragma warning restore 612, 618
         }

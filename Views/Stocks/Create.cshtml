@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    var productlist = ViewBag.selectedList;
 }
 
 <h1>Create</h1>
@@ -16,6 +17,9 @@
                 <label asp-for="Quantity" class="control-label"></label>
                 <input asp-for="Quantity" class="form-control" />
                 <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @Html.DropDownList("Product", (SelectList)ViewBag.selectList, "Please select a product")
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

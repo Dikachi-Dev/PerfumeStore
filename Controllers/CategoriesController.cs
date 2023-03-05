@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,8 +23,9 @@ namespace PerfumeStore.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var perfumeStoreContext = _context.Category.Include(c => c.Product);
-            return View(await perfumeStoreContext.ToListAsync());
+              return _context.Category != null ? 
+                          View(await _context.Category.ToListAsync()) :
+                          Problem("Entity set 'PerfumeStoreContext.Category'  is null.");
         }
 
         // GET: Categories/Details/5
@@ -35,7 +37,6 @@ namespace PerfumeStore.Controllers
             }
 
             var category = await _context.Category
-                .Include(c => c.Product)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
@@ -48,10 +49,16 @@ namespace PerfumeStore.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
-            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id");
+
+           var Products = _context.Products.ToList();
+            ViewBag.selectList = new SelectList(Products, "Id", "Name" );
+
+            
             return View();
         }
 
+        public List<Product> Products { get; set; }
+       
         // POST: Categories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -61,11 +68,15 @@ namespace PerfumeStore.Controllers
         {
             if (ModelState.IsValid)
             {
+                
+                int selected = int.Parse(Request.Form["Product"]);
+                
+                //category.Product = 
+
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id", category.Id);
             return View(category);
         }
 
@@ -82,7 +93,6 @@ namespace PerfumeStore.Controllers
             {
                 return NotFound();
             }
-            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id", category.Id);
             return View(category);
         }
 
@@ -118,7 +128,6 @@ namespace PerfumeStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Id"] = new SelectList(_context.Products, "Id", "Id", category.Id);
             return View(category);
         }
 
@@ -131,7 +140,6 @@ namespace PerfumeStore.Controllers
             }
 
             var category = await _context.Category
-                .Include(c => c.Product)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {

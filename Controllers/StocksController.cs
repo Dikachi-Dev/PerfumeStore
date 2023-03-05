@@ -46,8 +46,11 @@ namespace PerfumeStore.Controllers
         }
 
         // GET: Stocks/Create
+        public List<Product> Products { get; set; }
         public IActionResult Create()
         {
+            var productList = _context.Products.ToList();
+            ViewBag.selectList = new SelectList(productList, "Id", "Name");
             return View();
         }
 

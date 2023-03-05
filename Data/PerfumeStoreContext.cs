@@ -23,14 +23,15 @@ namespace PerfumeStore.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.CategoryId)
-                .WithOne(c => c.Product)
-                .HasForeignKey<Category>(c => c.Id);
-            modelBuilder.Entity<Stock>()
-                .HasOne(p => p.ProductId)
-                .WithOne(s => s.Stock)
-                .HasForeignKey<Product>(p => p.Id);
+            //modelBuilder.Entity<Product>()
+            //    .HasOne(p => p.Stocks)
+                
+            //    .WithOne(c => c.Product)
+            //    .HasForeignKey<Category>(c => c.Id);
+            //modelBuilder.Entity<Stock>()
+            //    .HasOne(p => p.ProductId)
+            //    .WithOne(s => s.Stock)
+            //    .HasForeignKey<Product>(p => p.Id);
         }
     }
   

@@ -2,9 +2,9 @@
 
 namespace PerfumeStore.Helpers
 {
-    public class MyViewModel
+    public class ProductsViewModel
     {
-        public IEnumerable<Product>? Products { get; set; }
+        public List<Product>? Products { get; set; }
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
     }

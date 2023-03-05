@@ -1,14 +1,13 @@
-﻿@model PerfumeStore.Helpers.MyViewModel
+﻿@model PerfumeStore.Helpers.ProductsViewModel
 
 @{
     ViewData["Title"] = "Index";
+    
 }
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
@@ -28,22 +27,22 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model.Products != null && Model.Products.Any())
+        @if (Model.Products != null)
         {
             @foreach (var item in Model.Products)
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @item.Name
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Description)
+                        @item.Description
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Tag)
+                        @item.Tag
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Size)
+                        @item.Size
                     </td>
                     <td>
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
@@ -51,11 +50,13 @@
                     </td>
                 </tr>
             }
-        }       
+        }
+
+
     </tbody>
 </table>
 <!-- Display pagination links -->
-@*@if (Model.TotalPages > 1)
+@if (Model.TotalPages > 1)
 {
     <div>
         @if (Model.CurrentPage > 1)
@@ -80,4 +81,4 @@
             @Html.ActionLink("Next", "Index", new { page = Model.CurrentPage + 1 })
         }
     </div>
-}*@
+}
