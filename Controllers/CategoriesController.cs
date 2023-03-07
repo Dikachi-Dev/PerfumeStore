@@ -51,28 +51,31 @@ namespace PerfumeStore.Controllers
         {
 
            var Products = _context.Products.ToList();
-            ViewBag.selectList = new SelectList(Products, "Id", "Name" );
+           ViewBag.selectList = new SelectList(Products, "Id", "Name" );
 
             
             return View();
         }
 
         public List<Product> Products { get; set; }
+       // public int CatPId { get; set; }
        
         // POST: Categories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
+        public async Task<IActionResult> Create([Bind("Id,Name,ProductId")] Category category)
         {
             if (ModelState.IsValid)
             {
-                
-                int selected = int.Parse(Request.Form["Product"]);
-                
-                //category.Product = 
+                // CatPId = int.Parse(Request.Form["Product"]);
 
+                //int selected = int.Parse(Request.Form["Product"]);
+                //category.Product = selected;
+                //category.Product = 
+                //category.Product = ;
+                category.ProductId = int.Parse(Request.Form["Product"]);
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

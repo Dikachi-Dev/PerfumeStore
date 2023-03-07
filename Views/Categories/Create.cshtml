@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    
    
 }
 
@@ -19,6 +20,13 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                @*<select asp-for="Product">
+                    <option>Select</option>
+                   @foreach(var product in ViewBag.Products)
+                    {
+                        <option  value="@product.Id">@product.Name</option>
+                    }
+                </select>*@
                 @Html.DropDownList("Product", (SelectList)ViewBag.selectList, "Please select a product")
             </div>
             <div class="form-group">

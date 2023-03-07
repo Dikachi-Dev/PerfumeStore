@@ -59,10 +59,11 @@ namespace PerfumeStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Quantity")] Stock stock)
+        public async Task<IActionResult> Create([Bind("Id,Quantity,ProductId")] Stock stock)
         {
             if (ModelState.IsValid)
             {
+                stock.ProductId = int.Parse(Request.Form["Product"]);
                 _context.Add(stock);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

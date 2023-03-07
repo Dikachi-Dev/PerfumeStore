@@ -12,7 +12,7 @@ using PerfumeStore.Data;
 namespace PerfumeStore.Migrations
 {
     [DbContext(typeof(PerfumeStoreContext))]
-    [Migration("20230305070408_newInit")]
+    [Migration("20230307075616_newInit")]
     partial class newInit
     {
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace PerfumeStore.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -110,7 +110,7 @@ namespace PerfumeStore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -127,7 +127,9 @@ namespace PerfumeStore.Migrations
                 {
                     b.HasOne("PerfumeStore.Models.Product", "Product")
                         .WithMany("Categorys")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
                 });
@@ -136,7 +138,9 @@ namespace PerfumeStore.Migrations
                 {
                     b.HasOne("PerfumeStore.Models.Product", "Product")
                         .WithMany("Stocks")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
                 });
