@@ -6,7 +6,7 @@ namespace PerfumeStore.Models
     {
         public Product()
         {
-            this.Categorys = new List<Category>();
+           
             this.Stocks = new List<Stock>();
         }
         public int Id { get; set; }
@@ -14,7 +14,11 @@ namespace PerfumeStore.Models
         public string? Description { get; set; }
         public string? Tag { get; set; }
         public int Size { get; set; }
-        public List<Category>? Categorys { get; set; }
+        public string Category { get; set; }
+        public decimal? Price { get; set; }
+        public string Image1 { get; set; }
+        public string Image2 { get; set; }
+        public string Image3 { get; set; }
         public List<Stock>? Stocks { get; set; }
 
     }

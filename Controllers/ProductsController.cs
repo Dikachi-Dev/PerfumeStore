@@ -58,16 +58,52 @@ namespace PerfumeStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Tag,Size")] Product product)
+        public async Task<IActionResult> Create(List<IFormFile> images, [Bind("Id,Name,Description,Tag,Size,Category,Price")] Product product)
         {
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                _context.Add(product);
+
+                foreach (var image in images)
+                {
+                    if (image != null && image.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(image.FileName);
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", fileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await image.CopyToAsync(stream);
+                        }
+                        if (product.Image1 == null)
+                        {
+                            product.Image1 = fileName;
+                        }
+                        else if (product.Image2 == null)
+                        {
+                            product.Image2 = fileName;
+                        }
+                        else if (product.Image3 == null)
+                        {
+                            product.Image3 = fileName;
+                        }
+                        // Add more if statements for additional image properties as needed
+                    }
+            }
+            }
+            catch (IOException ex)
+            {
+                // Handle the IOException here
+                // Wait for a few seconds and try again to access the file
+                await Task.Delay(5000);
+            }
+            _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            return View(product);
+           // }
+           // return View(product);
         }
+
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -12,8 +12,8 @@ using PerfumeStore.Data;
 namespace PerfumeStore.Migrations
 {
     [DbContext(typeof(PerfumeStoreContext))]
-    [Migration("20230307075616_newInit")]
-    partial class newInit
+    [Migration("20230308183833_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,27 +24,6 @@ namespace PerfumeStore.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("PerfumeStore.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Category");
-                });
 
             modelBuilder.Entity("PerfumeStore.Models.Order", b =>
                 {
@@ -85,11 +64,30 @@ namespace PerfumeStore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image3")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Size")
                         .HasColumnType("int");
@@ -123,17 +121,6 @@ namespace PerfumeStore.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Models.Category", b =>
-                {
-                    b.HasOne("PerfumeStore.Models.Product", "Product")
-                        .WithMany("Categorys")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("PerfumeStore.Models.Stock", b =>
                 {
                     b.HasOne("PerfumeStore.Models.Product", "Product")
@@ -147,8 +134,6 @@ namespace PerfumeStore.Migrations
 
             modelBuilder.Entity("PerfumeStore.Models.Product", b =>
                 {
-                    b.Navigation("Categorys");
-
                     b.Navigation("Stocks");
                 });
 #pragma warning restore 612, 618

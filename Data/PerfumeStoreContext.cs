@@ -18,7 +18,6 @@ namespace PerfumeStore.Data
 
         public DbSet<PerfumeStore.Models.Order> Orders { get; set; } = default!;
         public DbSet<Stock> Stocks { get; set; }= default!;
-        public DbSet<PerfumeStore.Models.Category> Category { get; set; } = default!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
