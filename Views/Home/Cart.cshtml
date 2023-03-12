@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model PerfumeStore.Helpers.CartItem
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<section class="row">
+    <aside class="col-4">
+
+    </aside>
+    <section class="col-8">
+        <div class="row">
+            @if (ViewBag.Cart != null)
+            {
+                @foreach (var item in ViewBag.Cart)
+                {
+                    <div class="col-md-3">
+                        <h3>Name: @item.Name</h3>
+                        <h3>Price: @item.Price</h3>
+                        <h3>Quantity: @item.Quantity</h3>
+                    </div>
+                }
+            }
+            else
+            {
+            <h3>You have no item in your cart continue shopping</h3>
+            }
+            
+        </div>
+    </section>
+</section>

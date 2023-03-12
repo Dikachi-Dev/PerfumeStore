@@ -4,57 +4,44 @@
     ViewData["Title"] = "Index";
     
 }
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <script>
+        alert("@ViewBag.Message");
+    </script>
+}
 
-<h1>Index</h1>
 
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Name
-            </th>
-            <th>
-                Description
-            </th>
-            <th>
-                Tag
-            </th>
-            <th>
-                Size
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Products != null)
-        {
+
+
+<section class="row">
+    <aside class="col-4">
+
+    </aside>
+    <section class="col-8">
+        <div class="row">
             @foreach (var item in Model.Products)
             {
-                <tr>
-                    <td>
-                        @item.Name
-                    </td>
-                    <td>
-                        @item.Description
-                    </td>
-                    <td>
-                        @item.Tag
-                    </td>
-                    <td>
-                        @item.Size
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <div class="col-md-3">
+                    <h3>Name: @item.Name</h3>
+                    <h3>Description: @item.Description</h3>
+                    <h3>Price: @item.Price</h3>
+                    <form method="post" action="/Home/AddToCart">
+                        <input type="hidden" name="productId" value="@item.Id" />
+                        <label>Quantity:</label>
+                        <input type="number" name="quantity" value="1" min="1" />
+                        <button type="submit">Add to Cart</button>
+                    </form>
+                </div>
 
-                    </td>
-                </tr>
+                
             }
-        }
+        </div>
+    </section>
+</section>
 
 
-    </tbody>
-</table>
 <!-- Display pagination links -->
 @if (Model.TotalPages > 1)
 {
