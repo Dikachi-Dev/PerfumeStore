@@ -31,7 +31,7 @@ namespace PerfumeStore.Helpers
             var idbuilder = new StringBuilder();
 
             //9 digits btw 100000000 and 999999999
-            idbuilder.Append(RandomNumber(1000000000, 999999999));
+            idbuilder.Append(RandomNumber(100000000, 999999999));
 
             //Add Letters 
 

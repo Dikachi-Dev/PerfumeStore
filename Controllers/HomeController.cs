@@ -5,6 +5,10 @@ using PerfumeStore.Data;
 using PerfumeStore.Helpers;
 using PerfumeStore.Models;
 using System.Diagnostics;
+using System.Threading;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace PerfumeStore.Controllers
 {
@@ -73,7 +77,12 @@ namespace PerfumeStore.Controllers
                         Quantity = 1
                     });
                 }
-                Response.Cookies.Append("cart", JsonConvert.SerializeObject(cartList));
+                var options = new CookieOptions
+                {
+                    Expires = DateTime.Now.AddHours(24),
+                    HttpOnly = true
+                };
+                Response.Cookies.Append("cart", JsonConvert.SerializeObject(cartList), options);
             }
             else
             {
@@ -87,7 +96,13 @@ namespace PerfumeStore.Controllers
                 Quantity = 1
             }
         };
-                Response.Cookies.Append("cart", JsonConvert.SerializeObject(cartList));
+                var options = new CookieOptions
+                {
+                    Expires = DateTime.Now.AddHours(24),
+                    HttpOnly = true
+                };
+                Response.Cookies.Append("cart", JsonConvert.SerializeObject(cartList), options);
+                
             }
             TempData["Message"] = "Continue";
             return RedirectToAction("Index");
@@ -102,6 +117,47 @@ namespace PerfumeStore.Controllers
                 return View();
             }
             return View();
+        }
+        public async Task<IActionResult> SendOrder(CancellationToken cancellationToken, Order order)
+        {
+            if (ModelState.IsValid)
+            {
+                var cart = Request.Cookies["cart"];
+                if (cart != null)
+                {
+                    var gen = new RefGenerator();
+                    order.OrderRef = gen.OrdRefNumber();
+                    order.OrderDate = DateTime.Now;
+                    string newOrder = "Order reference Id: " + order.OrderRef + "\n" + "Date: " + order.OrderDate + "\n" + " Name:" + order.OrderName + "\n" + "Address:" + order.Address + "\n" + "Phone Number:" + order.PhoneNumber + "\n" + "City: " + order.City;
+                    _context.Add(order);
+                    
+                    var botClient = new TelegramBotClient("5738530088:AAGRWWlC-0LJphT5Pe1MJEYbtE6aWl50cN0");
+                    var chatId = 584277607;
+                    var cartList = JsonConvert.DeserializeObject<List<CartItem>>(cart);
+                    Message message = await botClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: newOrder,
+                        cancellationToken: cancellationToken);
+                    await _context.SaveChangesAsync();
+                    foreach (var item in cartList)
+                    {
+                        string orders = "Order ID:" + order.OrderRef + "\n" + "Item Name: " + item.Name + "\n" + " Quantity: " + item.Quantity + "\n" + " Price:" + item.Price;
+                        Message newmessage = await botClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: orders,
+                        cancellationToken: cancellationToken);
+
+                    }
+                    Response.Cookies.Delete("cart");
+
+                    TempData["Message"] = "Your Order has been placed";
+
+                    return RedirectToAction("Index");
+
+                }
+                return RedirectToAction("Cart");
+            }
+            return RedirectToAction("Cart");
         }
 
         public IActionResult Privacy()

@@ -1,27 +1,53 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model PerfumeStore.Helpers.CartItem
+@model PerfumeStore.Models.Order
 @{
     ViewData["Title"] = "Cart";
 }
 
 <section class="row">
-    <aside class="col-4">
-
+    <aside class="col-6">
+        <form asp-action="SendOrder" asp-controller="Home">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>           
+            <div class="form-group">
+                <label asp-for="OrderName" class="control-label">Full Name</label>
+                <input asp-for="OrderName" class="form-control" />
+                <span asp-validation-for="OrderName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Place Order" class="btn btn-primary" />
+            </div>
+        </form>
     </aside>
-    <section class="col-8">
+    <section class="col-6">
         <div class="row">
             @if (ViewBag.Cart != null)
             {
                 @foreach (var item in ViewBag.Cart)
                 {
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <h3>Name: @item.Name</h3>
                         <h3>Price: @item.Price</h3>
                         <h3>Quantity: @item.Quantity</h3>
                     </div>
                 }
+               
             }
             else
             {
@@ -31,3 +57,13 @@
         </div>
     </section>
 </section>
+
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
