@@ -131,8 +131,8 @@ namespace PerfumeStore.Controllers
                     string newOrder = "Order reference Id: " + order.OrderRef + "\n" + "Date: " + order.OrderDate + "\n" + " Name:" + order.OrderName + "\n" + "Address:" + order.Address + "\n" + "Phone Number:" + order.PhoneNumber + "\n" + "City: " + order.City;
                     _context.Add(order);
                     
-                    var botClient = new TelegramBotClient("5738530088:AAGRWWlC-0LJphT5Pe1MJEYbtE6aWl50cN0");
-                    var chatId = 584277607;
+                    var botClient = new TelegramBotClient("Token");
+                    var chatId ="put your userid" ;
                     var cartList = JsonConvert.DeserializeObject<List<CartItem>>(cart);
                     Message message = await botClient.SendTextMessageAsync(
                         chatId: chatId,
